@@ -11,10 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Paksa Laravel 11 menggunakan folder /tmp saat berjalan di Vercel
-        if (config('app.env') === 'production') {
-            $this->app->useStoragePath('/tmp/storage');
-        }
+        // Bersihkan isi di dalam sini (kosongkan)
     }
 
     /**
@@ -22,9 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Mengatur jalur kompilasi blade secara dinamis di serverless
-        if (config('app.env') === 'production') {
-            config(['view.compiled' => '/tmp/storage/framework/views']);
-        }
+        // Bersihkan isi di dalam sini (kosongkan)
     }
 }
