@@ -11,9 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Memercayai proxy agar URL SSL (https) Vercel terbaca dengan benar
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->booting(function ($app) {
+        // PENGATURAN WAJIB VERCEL: Paksa alokasi path sebelum Service Provider dimuat
+        if (getenv('APP_ENV') === 'production') {
+            $app->useStoragePath('/tmp/storage');
+            config(['view.compiled' => '/tmp/storage/framework/views']);
+        }
+    })
+    ->create();
