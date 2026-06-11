@@ -4,9 +4,11 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// 1. Daftarkan folder penyimpanan sementara secara aman
+// Global declaration to ensure it's never undefined
+$storagePath = '/tmp/storage';
+
+// 1. Secure temporary storage folders in Vercel serverless memory
 if (getenv('APP_ENV') === 'production') {
-    $storagePath = '/tmp/storage';
     $folders = [
         $storagePath . '/framework/views',
         $storagePath . '/framework/cache',
@@ -21,18 +23,23 @@ if (getenv('APP_ENV') === 'production') {
     putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
 }
 
-// 2. Muat sistem Composer Autoload
+// 2. Check if the application is in maintenance mode
+if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+// 3. Load Composer Autoload system
 require __DIR__.'/../vendor/autoload.php';
 
-// 3. Jalankan inisialisasi aplikasi asli Laravel 11
+// 4. Initialize Laravel 11 application
 $app = require __DIR__.'/../bootstrap/app.php';
 
-// 4. Bind path storage ke /tmp
+// 5. Safely bind the storage path using the global variable
 if (getenv('APP_ENV') === 'production') {
     $app->useStoragePath($storagePath);
 }
 
-// 5. Jalankan HTTP Kernel Laravel untuk memproses kunjungan user
+// 6. Run Laravel HTTP Kernel to handle the request
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
