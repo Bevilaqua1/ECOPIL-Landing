@@ -4,27 +4,23 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// 1. Cek mode maintenance jika ada
+// Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// 2. Muat sistem Composer Autoload
+// Register the Suite Autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
-// 3. Jalankan inisialisasi bootstrap Laravel 11
-$app = require_with_globals(__DIR__.'/../bootstrap/app.php');
-
-// 4. Proses request pengunjung
-$response = $app->handle(Request::capture());
-
-$response->send();
-
-$app->terminate(Request::capture(), $response);
+// Bootstrap Laravel and handle the request...
+(require_with_globals(__DIR__.'/../bootstrap/app.php'))
+    ->handle(Request::capture())
+    ->send();
 
 /**
- * Helper function bawaan Laravel 11
+ * Require a file with a clean global scope.
  */
-function require_with_globals(string $path) {
+function require_with_globals(string $path)
+{
     return require $path;
 }

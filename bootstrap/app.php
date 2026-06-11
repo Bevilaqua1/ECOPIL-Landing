@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,12 +14,4 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })
-    ->booting(function ($app) {
-        // PENGATURAN WAJIB VERCEL: Paksa alokasi path sebelum Service Provider dimuat
-        if (getenv('APP_ENV') === 'production') {
-            $app->useStoragePath('/tmp/storage');
-            config(['view.compiled' => '/tmp/storage/framework/views']);
-        }
-    })
-    ->create();
+    })->create();
