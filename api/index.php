@@ -1,6 +1,6 @@
 <?php
 
-// Membuat folder storage terstruktur di dalam folder /tmp Vercel
+// Membuat folder sementara secara aman di memori /tmp Vercel
 $storageFolders = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache',
@@ -10,7 +10,7 @@ $storageFolders = [
 
 foreach ($storageFolders as $folder) {
     if (!is_dir($folder)) {
-        mkdir($folder, 0755, true);
+        @mkdir($folder, 0755, true);
     }
 }
 
