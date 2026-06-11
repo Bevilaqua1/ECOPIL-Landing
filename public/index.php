@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// 1. Amankan folder penyimpanan sementara di memori serverless Vercel
-if (env('APP_ENV') === 'production') {
+// 1. Amankan folder penyimpanan sementara di memori serverless Vercel menggunakan getenv
+if (getenv('APP_ENV') === 'production') {
     $storageFolders = [
         '/tmp/storage/framework/views',
         '/tmp/storage/framework/cache',
@@ -17,6 +17,15 @@ if (env('APP_ENV') === 'production') {
             @mkdir($folder, 0755, true);
         }
     }
+    
+    // Menghapus file cache bootstrap yang terkunci jika ada
+    if (file_exists('/tmp/storage/bootstrap/cache/services.php')) {
+        @unlink('/tmp/storage/bootstrap/cache/services.php');
+    }
+    if (file_exists('/tmp/storage/bootstrap/cache/packages.php')) {
+        @unlink('/tmp/storage/bootstrap/cache/packages.php');
+    }
+
     // Paksa Laravel menggunakan path compile view di folder /tmp Vercel
     putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 }
@@ -33,7 +42,7 @@ require __DIR__.'/../vendor/autoload.php';
 $app = require __DIR__.'/../bootstrap/app.php';
 
 // 5. Paksa aplikasi menggunakan folder storage /tmp yang bisa ditulis (Writable)
-if (env('APP_ENV') === 'production') {
+if (getenv('APP_ENV') === 'production') {
     $app->useStoragePath('/tmp/storage');
 }
 
