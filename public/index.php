@@ -1,20 +1,49 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Determine if the application is in maintenance mode...
+// 1. Amankan folder penyimpanan sementara di memori serverless Vercel
+if (env('APP_ENV') === 'production') {
+    $storageFolders = [
+        '/tmp/storage/framework/views',
+        '/tmp/storage/framework/cache',
+        '/tmp/storage/framework/sessions',
+        '/tmp/storage/bootstrap/cache'
+    ];
+    foreach ($storageFolders as $folder) {
+        if (!is_dir($folder)) {
+            @mkdir($folder, 0755, true);
+        }
+    }
+    // Paksa Laravel menggunakan path compile view di folder /tmp Vercel
+    putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
+}
+
+// 2. Cek apakah aplikasi sedang dalam mode perbaikan (Maintenance Mode)
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// Register the Composer autoloader...
+// 3. Muat sistem Composer Autoload
 require __DIR__.'/../vendor/autoload.php';
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// 4. Jalankan inisialisasi aplikasi asli Laravel 11
+$app = require __DIR__.'/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+// 5. Paksa aplikasi menggunakan folder storage /tmp yang bisa ditulis (Writable)
+if (env('APP_ENV') === 'production') {
+    $app->useStoragePath('/tmp/storage');
+}
+
+// 6. Jalankan HTTP Kernel Laravel untuk memproses kunjungan user
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Request::capture()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);
