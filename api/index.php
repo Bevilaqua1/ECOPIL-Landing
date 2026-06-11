@@ -1,6 +1,6 @@
 <?php
 
-// Otomatis membuat folder penyimpanan sementara di serverless Vercel jika belum ada
+// Membuat folder storage terstruktur di dalam folder /tmp Vercel
 $storageFolders = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache',
