@@ -1,6 +1,9 @@
 <?php
 
-// 1. Buat folder penyimpanan sementara secara aman di memori /tmp Vercel
+// 1. Muat sistem Composer Autoload agar semua kelas Laravel (Illuminate) bisa dibaca
+require __DIR__ . '/../vendor/autoload.php';
+
+// 2. Buat folder penyimpanan sementara secara aman di memori /tmp Vercel
 $storageFolders = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache',
@@ -14,16 +17,16 @@ foreach ($storageFolders as $folder) {
     }
 }
 
-// 2. Set environment variabel khusus di tingkat PHP runtime untuk memaksa path storage
+// 3. Set environment jalur kompilasi blade ke folder /tmp yang bisa ditulis (Writable)
 putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 
-// 3. Muat file bootstrap asli Laravel 11
+// 4. Panggil inisialisasi aplikasi asli Laravel 11
 $app = require __DIR__ . '/../bootstrap/app.php';
 
-// 4. Paksa aplikasi menggunakan folder storage /tmp yang bisa ditulis (Writable)
+// 5. Paksa Laravel menggunakan path storage di folder /tmp Vercel
 $app->useStoragePath('/tmp/storage');
 
-// 5. Jalankan HTTP Kernel Laravel untuk memproses request
+// 6. Jalankan HTTP Kernel Laravel untuk memproses kunjungan user
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
