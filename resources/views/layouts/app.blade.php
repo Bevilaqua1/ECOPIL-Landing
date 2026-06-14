@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google-site-verification" content="4Kb5DPbsCWt2qRrBUd4MRD-7XH3yl9yJd5jw3a0wbiU" />
 
     {{-- SEO & Metadata --}}
     <meta name="theme-color" content="#2e7d32">
