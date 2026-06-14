@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://ecopil-landing-production.up.railway.app/sitemap.xml
